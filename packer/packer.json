@@ -1,0 +1,45 @@
+{
+  "variables": {
+    "source_ami_name_prefix": "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20210430",
+    "source_ami_owners": "099720109477",
+    "image_name": "",
+    "instance_type": "",
+    "region": "",
+    "vpc_id": "",
+    "subnet_id": "",
+    "ssh_username": "ubuntu"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "source_ami_filter": {
+        "filters": {
+          "name": "{{user `source_ami_name_prefix`}}"
+        },
+        "owners": ["{{user `source_ami_owners`}}"],
+        "most_recent": true
+      },
+      "ami_name": "{{user `image_name`}}",
+      "instance_type": "{{user `instance_type`}}",
+      "region": "{{user `region`}}",
+      "ssh_username": "{{user `ssh_username`}}",
+      "vpc_id": "{{user `vpc_id`}}",
+      "subnet_id": "{{user `subnet_id`}}",
+      "ssh_pty": "true"
+    }
+  ],
+  "provisioners": [{
+    "type": "shell",
+    "inline": [
+      "sleep 30",
+      "sudo apt-get update",
+      "sudo apt-get install unzip -y",
+      "sudo apt install mysql-client-core-8.0",
+      "curl -L https://releases.hashicorp.com/vault/1.8.2/vault_1.8.2_linux_amd64.zip -o vault.zip",
+      "unzip vault.zip",
+      "sudo chown root:root vault",
+      "sudo mv vault /usr/local/bin/",
+      "rm -f vault.zip"
+    ]
+  }]
+}
